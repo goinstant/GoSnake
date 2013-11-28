@@ -141,6 +141,7 @@ function initializeSharing(cb) {
 
   // Create Share Button
   addShareButton(parser.href);
+  cb();
 }
 
 function addShareButton(text) {

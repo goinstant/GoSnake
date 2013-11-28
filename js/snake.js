@@ -29,7 +29,7 @@ var food = {};
 
 // snakes
 var snakes = {};
-var snakeKey;
+var snakesKey;
 
 var lobby;
 var el = {};
@@ -64,16 +64,18 @@ function initializeSnake(cb) {
     for(var x = 0; x < snakes[myUserId].length; x++) {
       snakes[myUserId].blocks[x] = { x: 0, y: 0 };
     }
+
     var snakeListener = function(val, context) {
       var username = context.key.substr('/snakes/'.length);
       snakes[username] = context.value;
     };
-    snakeKey.on('set', { bubble:true, listener: snakeListener });
-    snakeKey.key("/" + myUserId).set(snakes[myUserId], function(err) {
+    snakesKey.on('set', { bubble:true, listener: snakeListener });
+
+    snakesKey.key("/" + myUserId).set(snakes[myUserId], function(err) {
       if (err) {
         throw err;
       }
-      snakeKey.get(function(err, value, context) {
+      snakesKey.get(function(err, value, context) {
         if (err) {
           throw err;
         }
@@ -106,7 +108,7 @@ function initializeGame() {
       }
       lobby = room;
 
-      snakeKey = lobby.key('/snakes');
+      snakesKey = lobby.key('/snakes');
 
       async.series([
         initializeUser,
@@ -144,9 +146,9 @@ function initializeSharing(cb) {
 function addShareButton(text) {
   var shareBtn = document.createElement('div');
   $(shareBtn).addClass('share-btn');
-  
+
   shareBtn.innerHTML = '<input id="gi-share-text" type="text" value="' + text + '"/>';
-  
+
   var shareBtnWrap = $('.invite-a-friend')[0];
   //main.parentNode.insertBefore(shareBtn, main);
   $(shareBtnWrap).append(shareBtn);
@@ -229,7 +231,7 @@ function initializeUser(cb) {
     }
     sessionStorage.setItem('gi_username', myUserName);
   }
-  
+
   var userListElement = $('.user-list-container')[0];
 
   var userList = new goinstant.widgets.UserList({
@@ -254,7 +256,7 @@ function initializeUser(cb) {
       });
     });
   });
-} 
+}
 
 function initializeNotifications(cb) {
 
@@ -507,7 +509,7 @@ function spawnSnake(snakeUsername) {
     }
   }
 
-  this.snakeKey.key("/" + myUserId).set(currentSnake, function(err) {
+  this.snakesKey.key("/" + myUserId).set(currentSnake, function(err) {
     if(err) throw err;
   });
 }
@@ -563,7 +565,7 @@ $(document).ready(function () {
 });
 
 $(window).on('beforeunload', function(){
-  snakeKey.key("/" + myUserId).remove(function(err, value, context) {
+  snakesKey.key("/" + myUserId).remove(function(err, value, context) {
     if (err) {
       throw err;
     }
@@ -591,7 +593,7 @@ $(document).keydown(function(e){
   }
 
   if (myUserId && currentSnake) {
-    snakeKey.key("/" + myUserId).set(currentSnake, function(err) {
+    snakesKey.key("/" + myUserId).set(currentSnake, function(err) {
       if(err) {
         throw err;
       }
